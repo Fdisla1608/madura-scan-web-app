@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Video Scan</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='navbar.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='scan.css') }}" />
+  </head>
+  <body>
+    <div class="navbar-component">
+      <div class="left-container">
+        <a class="nav-item" href="/">Reporte</a>
+        <a class="nav-item" href="/scan">Scanner</a>
+        <a class="nav-item" href="/users">Usuario</a>
+      </div>
+      <div class="right-container">
+        <a href="{{ url_for('logout') }}" class="button-logout">Logout</a>
+      </div>
+    </div>
+
+    <div class="loading-screen">
+      <div class="loader"></div>
+    </div>
+
+    <section>
+      <div class="panel-videos">
+        <button class="btn-toogle-flash" id="toggleButton">Turn On Flash</button>
+        <div class="processed-panel">
+          <img id="processed" class="processed-image" />
+        </div>
+        <div class="selection-camera-panel">
+          <div class="selection-camera">
+            <label for="camera-select" class="select-label">Selecccionar Camara</label>
+            <select id="camera-select" class="select-input"></select>
+          </div>
+          <video id="video" width="640" height="480" autoplay class="video-panel"></video>
+          <div class="section-footer">
+            <button onclick="processImage()" class="shoot-button">Procesar</button>
+            <div class="table-panel">
+              <div class="table-title">Resultados</div>
+              <table id="fruits-table">
+                <thead>
+                  <tr>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+              <div class="button-container">
+                <button onclick="saveScan()" class="save-button">Guardar</button>
+                <button onclick="cancelScan()" class="cancel-button">Eliminar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script src="{{ url_for('static', filename='js/scan.js') }}"></script>
+  </body>
+</html>

@@ -1,0 +1,273 @@
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  block-size: 100vh;
+}
+
+.loading-screen {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.788);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  inline-size: 100vw;
+  block-size: 100vh;
+  z-index: 5;
+}
+
+.loading-logo {
+  inline-size: 5rem;
+  block-size: 5rem;
+  border: 1px red solid;
+}
+
+section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  block-size: 90%;
+}
+
+.select-label {
+  font-size: 1.2rem;
+}
+
+.select-input {
+  font-size: 1.2rem;
+}
+
+.panel-videos {
+  display: flex;
+  gap: 10px;
+}
+
+.video-panel {
+  inline-size: 320px;
+  block-size: 240px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.selection-camera {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.selection-camera-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.processed-image {
+  inline-size: 1280px;
+  block-size: 720px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.shoot-button {
+  inline-size: 15rem;
+  block-size: 4rem;
+  font-size: 2rem;
+  margin-left: 7rem;
+  margin-right: 7rem;
+  color: white;
+  background-color: rgb(0, 45, 128);
+  border-radius: 10px;
+  border: none;
+}
+
+.shoot-button:hover {
+  background-color: white;
+  color: rgb(0, 45, 128);
+  border: 1px gray solid;
+}
+
+.section-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.table-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.table-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 10px;
+}
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.save-button {
+  inline-size: 10rem;
+  block-size: 3rem;
+  font-size: 1.2rem;
+  color: white;
+  background-color: green;
+  border-radius: 10px;
+  border: none;
+}
+
+.cancel-button {
+  inline-size: 10rem;
+  block-size: 3rem;
+  font-size: 1.2rem;
+  color: white;
+  background-color: rgb(245, 19, 11);
+  border-radius: 10px;
+  border: none;
+}
+
+table {
+  border-spacing: 1;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  overflow-y: auto;
+  max-block-size: 200px;
+  margin: 0 auto;
+  inline-size: 100%;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+
+  * {
+    position: relative;
+  }
+
+  td,
+  th {
+    padding-left: 8px;
+  }
+
+  thead tr {
+    height: 60px;
+    background: #87cefa;
+    font-size: 16px;
+  }
+
+  tbody tr {
+    height: 48px;
+    border-bottom: 1px solid #e3f1d5;
+    &:last-child {
+      border: 0;
+    }
+  }
+
+  td,
+  th {
+    text-align: left;
+    &.l {
+      text-align: right;
+    }
+    &.c {
+      text-align: center;
+    }
+    &.r {
+      text-align: center;
+    }
+  }
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 40px;
+  height: 40px;
+  --c: no-repeat linear-gradient(#25b09b 0 0);
+  background: var(--c), var(--c), var(--c), var(--c);
+  background-size: 21px 21px;
+  animation: l5 1.5s infinite cubic-bezier(0.3, 1, 0, 1);
+}
+@keyframes l5 {
+  0% {
+    background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+  }
+  33% {
+    background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+    width: 60px;
+    height: 60px;
+  }
+  66% {
+    background-position: 100% 0, 100% 100%, 0 100%, 0 0;
+    width: 60px;
+    height: 60px;
+  }
+  100% {
+    background-position: 100% 0, 100% 100%, 0 100%, 0 0;
+  }
+}
+
+.btn-toogle-flash {
+  width: 4.5rem;
+  background-color: #87cefa;
+  color: white;
+  font-size: 1.3rem;
+  border: none;
+  margin: 10px;
+}
+
+@media #{$gl-xs} {
+  table {
+    display: block;
+    > *,
+    tr,
+    td,
+    th {
+      display: block;
+    }
+
+    thead {
+      display: none;
+    }
+    tbody tr {
+      height: auto;
+      padding: 8px 0;
+      td {
+        padding-left: 45%;
+        margin-bottom: 12px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+        &:before {
+          position: absolute;
+          font-weight: 700;
+          width: 40%;
+          left: 10px;
+          top: 0;
+        }
+
+        &:nth-child(1):before {
+          content: "Code";
+        }
+        &:nth-child(2):before {
+          content: "Stock";
+        }
+        &:nth-child(3):before {
+          content: "Cap";
+        }
+        &:nth-child(4):before {
+          content: "Inch";
+        }
+        &:nth-child(5):before {
+          content: "Box Type";
+        }
+      }
+    }
+  }
+}

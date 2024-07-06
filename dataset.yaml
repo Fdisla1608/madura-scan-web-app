@@ -1,0 +1,4 @@
+train: C:\Users\fdisl\OneDrive\Escritorio\MaduraScan\src\madura-scan-web-app\Data\train\
+val: C:\Users\fdisl\OneDrive\Escritorio\MaduraScan\src\madura-scan-web-app\Data\val\
+nc: 3
+names: ["banano_sobremaduro", "banano_descompuesto", "banano_fresco"]

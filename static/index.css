@@ -1,0 +1,225 @@
+body {
+  display: flex;
+  flex-direction: column;
+  font: "Calibri", "Arial";
+  margin: 0;
+  padding: 0;
+  block-size: 100vh;
+}
+
+section {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 15px;
+  padding: 20px;
+}
+
+.info-panel {
+  display: flex;
+  flex-direction: column;
+  inline-size: 60%;
+  gap: 15px;
+}
+
+.analytics-panel {
+  inline-size: 40%;
+  padding: 15px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.user-panel {
+  display: flex;
+  gap: 25px;
+}
+
+.user-label {
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  flex: 1;
+  block-size: 100px;
+  padding-left: 15px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.fruits-panel {
+  display: flex;
+  gap: 25px;
+  inline-size: 100%;
+  block-size: 140px;
+}
+
+.fruits-cards {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  inline-size: 280px;
+  border: 1px rgb(192, 184, 184) solid;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.fruits-cards-state {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  padding: 10px;
+}
+
+.fruits-card-state {
+  font-size: 1.2rem;
+}
+
+.fruits-cards-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  inline-size: 100%;
+  block-size: 2.3rem;
+  font-size: 1.3rem;
+  background-color: #87CEFA;
+  border-radius: 3px;
+}
+
+.data-panel {
+  display: flex;
+  flex: 1;
+  gap: 15px;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.table-header-label {
+  font-size: 1.2rem;
+}
+
+.table-header-select{
+  font-size: 1.2rem;
+}
+
+.search-panel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.search-text {
+  background-image: url("./search_20dp_FILL0_wght400_GRAD0_opsz20.png");
+  background-size: 2.5rem;
+  background-position: 3px;
+  background-repeat: no-repeat;
+  font-size: 1.2rem;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+}
+
+.table-panel {
+  flex: 3;
+}
+
+table {
+  border-spacing: 1;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 0 auto;
+  inline-size: 100%;
+  position: relative;
+
+  * {
+    position: relative;
+  }
+
+  td,
+  th {
+    padding-left: 8px;
+  }
+
+  thead tr {
+    height: 60px;
+    background: #87CEFA;
+    font-size: 16px;
+  }
+
+  tbody tr {
+    height: 48px;
+    border-bottom: 1px solid #e3f1d5;
+    &:last-child {
+      border: 0;
+    }
+  }
+
+  td,
+  th {
+    text-align: left;
+    &.l {
+      text-align: right;
+    }
+    &.c {
+      text-align: center;
+    }
+    &.r {
+      text-align: center;
+    }
+  }
+}
+
+@media #{$gl-xs} {
+  table {
+    display: block;
+    > *,
+    tr,
+    td,
+    th {
+      display: block;
+    }
+
+    thead {
+      display: none;
+    }
+    tbody tr {
+      height: auto;
+      padding: 8px 0;
+      td {
+        padding-left: 45%;
+        margin-bottom: 12px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+        &:before {
+          position: absolute;
+          font-weight: 700;
+          width: 40%;
+          left: 10px;
+          top: 0;
+        }
+
+        &:nth-child(1):before {
+          content: "Code";
+        }
+        &:nth-child(2):before {
+          content: "Stock";
+        }
+        &:nth-child(3):before {
+          content: "Cap";
+        }
+        &:nth-child(4):before {
+          content: "Inch";
+        }
+        &:nth-child(5):before {
+          content: "Box Type";
+        }
+      }
+    }
+  }
+}

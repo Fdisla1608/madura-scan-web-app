@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Camera Streaming</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}" />
+  </head>
+  <body>
+    <div class="navbar-component">
+      <div class="left-container">
+        <div class="nav-title">MaduraScan</div>
+        <a class="nav-item" href="/">Dashboard</a>
+        <a class="nav-item" href="/registers">Registros</a>
+        <a class="nav-item" href="/scan">Scan</a>
+
+      </div>
+      <div class="right-container">
+        <a href="{{ url_for('logout') }}" class="button-logout">Logout</a>
+      </div>
+    </div>
+
+    <section>
+      <label for="camera-select">Select Camera:</label>
+      <select id="camera-select"></select>
+      <img id="processed" width="640" height="480" class="camera-screen" />
+    </section>
+    <canvas id="canvas" style="display: none"></canvas>
+    <script>
+      const socket = io.connect(window.location.href);
+      const canvas = document.getElementById("canvas");
+      const processed = document.getElementById("processed");
+      const context = canvas.getContext("2d");
+      const cameraSelect = document.getElementById("camera-select");
+      const video = document.createElement("video");
+
+      async function getCameras() {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter((device) => device.kind === "videoinput");
+        videoDevices.forEach((device, index) => {
+          const option = document.createElement("option");
+          option.value = device.deviceId;
+          option.text = device.label || `Camera ${index + 1}`;
+          cameraSelect.appendChild(option);
+        });
+      }
+
+      async function startCamera(deviceId) {
+        const constraints = {
+          video: {
+            deviceId: deviceId ? { exact: deviceId } : undefined,
+          },
+        };
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+        video.srcObject = stream;
+        video.play();
+
+        video.addEventListener("playing", () => {
+          setInterval(() => {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const base64data = canvas.toDataURL("image/jpeg");
+            socket.emit("video_frame", base64data);
+          }, 100); // Capturar imagen cada 100ms
+        });
+
+        socket.on("processed_frame", function (data) {
+          processed.src = data;
+        });
+      }
+
+      cameraSelect.addEventListener("change", () => {
+        const deviceId = cameraSelect.value;
+        startCamera(deviceId);
+      });
+
+      getCameras();
+      startCamera();
+    </script>
+  </body>
+</html>

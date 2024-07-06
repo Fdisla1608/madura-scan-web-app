@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='navbar.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+  </head>
+  <body>
+    <header class="navbar-component">
+      <div class="left-container">
+        <a class="nav-item" href="/">Reporte</a>
+        <a class="nav-item" href="/scan">Scanner</a>
+        <a class="nav-item" href="/users">Usuario</a>
+      </div>
+      <div class="right-container">
+        <a href="{{ url_for('logout') }}" class="button-logout">Logout</a>
+      </div>
+    </header>
+
+    <section>
+      <div class="info-panel">
+        <div class="user-panel">
+          <div class="user-label" id="user-text">
+            Bienvenido,
+          </div>
+        </div>
+        <div class="fruits-panel" id="fruits-panel"></div>
+        <div class="data-panel">
+          <div class="table-panel">
+            <div class="table-header">
+              <div class="search-panel">
+                <label for="search-text" class="table-header-label">Buscar: </label>
+                <input
+                  type="text"
+                  id="seach-text"
+                  class="search-text"
+                  onkeyup="myFunction()"
+                  placeholder="Buscar COD"
+                />
+              </div>
+              <div class="selection-panel">
+                <label for="view-select" class="table-header-label">Mostrar: </label>
+                <select name="view-select" id="" class="table-header-select">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="15">15</option>
+                </select>
+              </div>
+            </div>
+            <table id="frutasTabla">
+              <thead>
+                <tr>
+                  <th>COD</th>
+                  <th>Descripción</th>
+                  <th>Fecha</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="analytics-panel">
+        <canvas id="barChart"></canvas>
+        <canvas id="myChart"></canvas>
+      </div>
+    </section>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  </body>
+</html>
