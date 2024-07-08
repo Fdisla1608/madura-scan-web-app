@@ -274,7 +274,8 @@ def guardar_transacciones():
         fruit_states = data.get('fruitStates', {})
         image_data = data.get('image', '')
 
-        user_id = 1  # ID del usuario que realiza la transacción (ajustar según tu aplicación)
+        user_id = session.get('user_id', '0')
+
         logger.info(f"Datos recibidos para guardar transacciones: {fruit_states}")
 
         # Decodificar la imagen base64 si existe
