@@ -4,6 +4,7 @@ const video = document.getElementById("video");
 const canvas = document.createElement("canvas");
 const context = canvas.getContext("2d");
 const processed = document.getElementById("processed");
+let base64String = '';
 let fruitStates;
 let port;
 let writer;
@@ -26,29 +27,38 @@ async function startCamera(deviceId) {
 
   socket.on("processed_frame", function (data) {
     processed.src = data;
+    base64String = data;
     document.querySelector(".loading-screen").style.display = "none";
     console.log("Processed....");
   });
 
   socket.on("processed_data", function (json_data) {
-    console.log(json_data)
+    console.log(json_data);
     fruitStates = JSON.parse(json_data);
     prepareTables(fruitStates);
   });
 }
 
 async function saveScan() {
-  console.log(fruitStates);
-  console.log(Object.keys(fruitStates).length);
   if (Object.keys(fruitStates).length > 0) {
     try {
+      if (!base64String) {
+        alert("No se ha recibido una imagen procesada.");
+        return;
+      }
+
+      const payload = {
+        fruitStates,
+        image: base64String,
+      };
+
       const url = "/guardar_transacciones";
       const requestOptions = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(fruitStates),
+        body: JSON.stringify(payload),
       };
 
       const response = await fetch(url, requestOptions);
@@ -133,7 +143,6 @@ async function connectSerial() {
     reader = decoder.readable.getReader();
 
     readLoop();
-
   } catch (error) {
     console.error("Error connecting to serial port: ", error);
   }
@@ -145,30 +154,30 @@ async function readLoop() {
     if (done) {
       break;
     }
-    document.getElementById('output').innerText += value;
+    document.getElementById("output").innerText += value;
   }
 }
 
 async function sendCommand(command) {
   if (writer) {
-    await writer.write(command + '\n');
+    await writer.write(command + "\n");
   } else {
     console.error("Serial port is not open.");
   }
 }
 
-document.getElementById('toggleButton').addEventListener('click', async () => {
+document.getElementById("toggleButton").addEventListener("click", async () => {
   if (!port) {
     await connectSerial();
   }
-  
+
   flashState = !flashState;
   if (flashState) {
-    sendCommand('turn_on_flash');
-    document.getElementById('toggleButton').innerText = 'Turn Off Flash';
+    sendCommand("turn_on_flash");
+    document.getElementById("toggleButton").innerText = "Turn Off Flash";
   } else {
-    sendCommand('turn_off_flash');
-    document.getElementById('toggleButton').innerText = 'Turn On Flash';
+    sendCommand("turn_off_flash");
+    document.getElementById("toggleButton").innerText = "Turn On Flash";
   }
 });
 window.onload = () => {

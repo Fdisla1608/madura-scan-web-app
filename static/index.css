@@ -1,6 +1,4 @@
 body {
-  display: flex;
-  flex-direction: column;
   font: "Calibri", "Arial";
   margin: 0;
   padding: 0;
@@ -81,7 +79,7 @@ section {
   inline-size: 100%;
   block-size: 2.3rem;
   font-size: 1.3rem;
-  background-color: #87CEFA;
+  background-color: #87cefa;
   border-radius: 3px;
 }
 
@@ -102,7 +100,7 @@ section {
   font-size: 1.2rem;
 }
 
-.table-header-select{
+.table-header-select {
   font-size: 1.2rem;
 }
 
@@ -147,7 +145,7 @@ table {
 
   thead tr {
     height: 60px;
-    background: #87CEFA;
+    background: #87cefa;
     font-size: 16px;
   }
 
@@ -172,6 +170,30 @@ table {
       text-align: center;
     }
   }
+}
+
+.visualize-screen {
+  position: absolute;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  inline-size: 100%;
+  block-size: 100%;
+  background-color: rgba(90, 90, 90, 0.479);
+}
+
+.visualize-panel {
+  position: absolute;
+  top: auto;
+  left: auto;
+  z-index: 5;
+  border: 3px black solid;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+
 }
 
 @media #{$gl-xs} {

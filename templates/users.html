@@ -10,9 +10,11 @@
   <body>
     <div class="navbar-component">
       <div class="left-container">
-        <a class="nav-item" href="/">Reporte</a>
         <a class="nav-item" href="/scan">Scanner</a>
+        {% if user_type == 1 %}
+        <a class="nav-item" href="/">Reporte</a>
         <a class="nav-item" href="/users">Usuario</a>
+        {% endif %}
       </div>
       <div class="right-container">
         <a href="{{ url_for('logout') }}" class="button-logout">Logout</a>

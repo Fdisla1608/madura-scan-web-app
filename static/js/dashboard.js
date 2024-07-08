@@ -8,7 +8,6 @@ const colores = {
   Descompuesto: "rgba(255, 99, 132, 0.2)",
 };
 
-
 document.addEventListener("DOMContentLoaded", () => {
   const socket = io(); // Si el servidor está en una URL diferente, especifica la URL completa aquí
 
@@ -39,8 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
       Descompuesto: "brown",
     };
 
-    const userNameText = document.getElementById("user-text");
-    userNameText.innerHTML = `Saludos, ${data.nombre}`;
     crearTarjetasFrutas(data);
     llenarTabla(data.registros);
     generarGrafico(data);
@@ -148,11 +145,10 @@ function llenarTabla(registros) {
   });
 }
 
-
 function agruparDatosPorFecha(registros) {
   const agrupados = {};
 
-  registros.forEach(registro => {
+  registros.forEach((registro) => {
     const fecha = registro.fecha;
     const descripcion = registro.Descripcion;
 
@@ -176,9 +172,9 @@ function generarGrafico(data) {
   const datosAgrupados = agruparDatosPorFecha(data.registros);
 
   const labels = Object.keys(datosAgrupados);
-  const bananaData = labels.map(fecha => datosAgrupados[fecha].banana);
-  const limonData = labels.map(fecha => datosAgrupados[fecha].limon);
-  const mangoData = labels.map(fecha => datosAgrupados[fecha].mango);
+  const bananaData = labels.map((fecha) => datosAgrupados[fecha].banana);
+  const limonData = labels.map((fecha) => datosAgrupados[fecha].limon);
+  const mangoData = labels.map((fecha) => datosAgrupados[fecha].mango);
 
   new Chart("myChart", {
     type: "line",
@@ -209,4 +205,16 @@ function generarGrafico(data) {
       legend: { display: true },
     },
   });
+}
+
+function visualizar(cod) {
+  const screen = document.getElementById("visualize-screen");
+  const renderImage = document.getElementById("images-render");
+  renderImage.src = `/uploads/${cod}`;
+  screen.style.display = "flex";
+}
+
+function cerrarVisualizar() {
+  const screen = document.getElementById("visualize-screen");
+  screen.style.display = "none";
 }

@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify,send_from_directory
 from flask_socketio import SocketIO, emit
 import cv2
 import numpy as np
 import base64
+import os
 from flask_session import Session
 import logging
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -13,6 +14,11 @@ from mysql.connector import Error
 from datetime import datetime
 
 app = Flask(__name__)
+
+app.config['UPLOAD_FOLDER'] = 'uploads'
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+
 app.config['SECRET_KEY'] = 'supersecretkey'
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
@@ -64,19 +70,33 @@ def obtener_id_estado_fruta(cursor, estado):
 @app.route('/')
 def index():
     if 'username' in session:
-        return render_template('index.html')
+        username = session['username']
+        userId = session.get('user_id', 'Unknown ID')
+        userType = session.get('user_type', 'Unknown Type')
+        if userType == 1:
+            return render_template('index.html', username=username, user_id=userId, user_type=userType)
+        return redirect(url_for('scan'))
+        
     return redirect(url_for('login'))
 
 @app.route('/scan')
 def scan():
     if 'username' in session:
-        return render_template('scan.html')
+        username = session['username']
+        userId = session.get('user_id', 'Unknown ID')
+        userType = session.get('user_type', 'Unknown Type')
+        return render_template('scan.html',username=username, user_id=userId,user_type=userType)
     return redirect(url_for('login'))
 
 @app.route('/users')
 def users():
     if 'username' in session:
-        return render_template('users.html')
+        username = session['username']
+        userId = session.get('user_id', 'Unknown ID')
+        userType = session.get('user_type', 'Unknown Type')
+        if userType == 1:
+            return render_template('users.html',username=username, user_id=userId,user_type=userType)
+        return redirect(url_for('scan'))
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -94,6 +114,8 @@ def login():
             
             if user and check_password_hash(user['pwd'], password):
                 session['username'] = username
+                session['user_id'] = user['id']
+                session['user_type'] = user['fk_tipo_usuario']  # Asumiendo que 'fk_tipo_usuario' es el campo correspondiente
                 return redirect(url_for('index'))
             else:
                 return "Invalid username or password", 401
@@ -101,6 +123,7 @@ def login():
             return "Database connection error", 500
 
     return render_template('login.html')
+
 
 @app.route('/logout')
 def logout():
@@ -248,15 +271,33 @@ def eliminar_usuario(id):
 def guardar_transacciones():
     try:
         data = request.json  # Recibir datos JSON del cuerpo del POST
+        fruit_states = data.get('fruitStates', {})
+        image_data = data.get('image', '')
+
         user_id = 1  # ID del usuario que realiza la transacción (ajustar según tu aplicación)
-        logger.info(f"Datos recibidos para guardar transacciones: {data}")
+        logger.info(f"Datos recibidos para guardar transacciones: {fruit_states}")
+
+        # Decodificar la imagen base64 si existe
+        if image_data:
+            try:
+                header, encoded = image_data.split(',', 1)
+                file_data = base64.b64decode(encoded)
+                filename = os.path.join(app.config['UPLOAD_FOLDER'], f"image_{datetime.now().strftime('%Y%m%d%H%M%S')}.png")
+                
+                with open(filename, 'wb') as f:
+                    f.write(file_data)
+                
+                logger.info(f"Imagen guardada como {filename}")
+            except Exception as e:
+                logger.error(f"Error al procesar la imagen: {e}")
+                return jsonify({'error': f'Error al procesar la imagen: {e}'}), 500
 
         # Iniciar cursor para ejecutar consultas SQL
         connection = create_db_connection()
         if connection:
             cursor = connection.cursor(dictionary=True)
             # Iterar sobre las frutas y estados recibidos
-            for fruta, estados in data.items():
+            for fruta, estados in fruit_states.items():
                 logger.info(f"Procesando fruta: {fruta} con estados: {estados}")
                 for estado, cantidad in estados.items():
                     if cantidad > 0:
@@ -392,33 +433,37 @@ def predict_and_detect(chosen_model, img, classes=None, conf=0.5):
 
 def get_fruit_data(connection):
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT nombre, apellido FROM usuario WHERE id = 1")
+    userId = session.get('user_id', '0')
+    print(userId)
+    cursor.execute("SELECT nombre, apellido FROM usuario WHERE id = %s", (userId,))
     user = cursor.fetchone()
 
     cursor.execute("""
-        SELECT 
-f.descripcion AS fruta, 
-ef.descripcion AS estado, 
-CAST(SUM(t.cantidad) AS UNSIGNED) as cantidad
-FROM transaccion t
-JOIN fruta f ON t.fk_fruta = f.id
-JOIN estado_fruta ef ON t.fk_estado_fruta = ef.id
-WHERE t.fk_usuario = 1
-GROUP BY f.descripcion, ef.descripcion;
-
-    """)
+    SELECT 
+        f.descripcion AS fruta, 
+        ef.descripcion AS estado, 
+        CAST(SUM(t.cantidad) AS UNSIGNED) as cantidad
+    FROM transaccion t
+    JOIN fruta f ON t.fk_fruta = f.id
+    JOIN estado_fruta ef ON t.fk_estado_fruta = ef.id
+    JOIN ticket ti ON t.fk_ticket = ti.id
+    WHERE ti.fk_usuario = %s
+    GROUP BY f.descripcion, ef.descripcion;
+    """, (userId,))
+    
     fruit_data = cursor.fetchall()
 
-    # Obtener registros de transacciones
     cursor.execute("""
-        SELECT transaccion.id AS cod,
-    CONCAT(fruta.descripcion, ' ', estado_fruta.descripcion, ' -> ', cantidad) as Descripcion,
-    fecha_registro AS fecha
-    FROM Madura_Scan_DB.transaccion
-    INNER JOIN Madura_Scan_DB.fruta ON transaccion.fk_fruta = fruta.id
-    INNER JOIN Madura_Scan_DB.estado_fruta ON transaccion.fk_estado_fruta = Madura_Scan_DB.estado_fruta.id;
-    WHERE transaccion.fk_usuario = 1
-    """)
+    SELECT 
+        img_name AS cod,
+        CONCAT(fruta.descripcion, ' ', estado_fruta.descripcion, ' -> ', cantidad) as Descripcion,
+        ti.fecha_registro AS fecha
+        FROM transaccion
+        INNER JOIN fruta ON transaccion.fk_fruta = fruta.id
+        INNER JOIN estado_fruta ON transaccion.fk_estado_fruta = estado_fruta.id
+        INNER JOIN ticket ti ON transaccion.fk_ticket = ti.id
+        WHERE ti.fk_usuario = %s
+    """, (userId,))
     records = cursor.fetchall()
 
     return user, fruit_data, records
@@ -444,7 +489,7 @@ def format_data(user, fruit_data, records):
     transacciones = []
     for record in records:
         transacciones.append({
-            "cod": f"TR-{record['cod']:02d}",
+            "cod": f"{record['cod']}",
             "Descripcion": f"[{record['Descripcion']}]",
             "fecha": record['fecha'].strftime('%Y-%m-%d')
         })
@@ -457,5 +502,11 @@ def format_data(user, fruit_data, records):
 
     return result
 
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+
 if __name__ == "__main__":
+    #app.run(host='0.0.0.0', port=4000)
     socketio.run(app, debug=True)

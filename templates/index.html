@@ -12,21 +12,27 @@
   <body>
     <header class="navbar-component">
       <div class="left-container">
-        <a class="nav-item" href="/">Reporte</a>
         <a class="nav-item" href="/scan">Scanner</a>
+        {% if user_type == 1 %}
+        <a class="nav-item" href="/">Reporte</a>
         <a class="nav-item" href="/users">Usuario</a>
+        {% endif %}
       </div>
       <div class="right-container">
         <a href="{{ url_for('logout') }}" class="button-logout">Logout</a>
       </div>
     </header>
 
+    <div class="visualize-screen" id="visualize-screen" onclick="cerrarVisualizar()">
+      <div class="visualize-panel">
+        <img alt="picture" width="640" height="480" id="images-render" />
+      </div>
+    </div>
+
     <section>
       <div class="info-panel">
         <div class="user-panel">
-          <div class="user-label" id="user-text">
-            Bienvenido,
-          </div>
+          <div class="user-label" id="user-text">Bienvenido, {{ username }}!</div>
         </div>
         <div class="fruits-panel" id="fruits-panel"></div>
         <div class="data-panel">
@@ -55,7 +61,7 @@
               <thead>
                 <tr>
                   <th>COD</th>
-                  <th>Descripción</th>
+                  <th>Contenido</th>
                   <th>Fecha</th>
                   <th>Acción</th>
                 </tr>
