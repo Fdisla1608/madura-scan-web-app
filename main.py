@@ -274,21 +274,22 @@ def guardar_transacciones():
         fruit_states = data.get('fruitStates', {})
         image_data = data.get('image', '')
 
-        user_id = session.get('user_id', '0')
-
+        user_id = 1  # ID del usuario que realiza la transacción (ajustar según tu aplicación)
         logger.info(f"Datos recibidos para guardar transacciones: {fruit_states}")
 
         # Decodificar la imagen base64 si existe
+        filename = None
         if image_data:
             try:
                 header, encoded = image_data.split(',', 1)
                 file_data = base64.b64decode(encoded)
-                filename = os.path.join(app.config['UPLOAD_FOLDER'], f"image_{datetime.now().strftime('%Y%m%d%H%M%S')}.png")
+                filename = f"image_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 
-                with open(filename, 'wb') as f:
+                with open(filepath, 'wb') as f:
                     f.write(file_data)
                 
-                logger.info(f"Imagen guardada como {filename}")
+                logger.info(f"Imagen guardada como {filepath}")
             except Exception as e:
                 logger.error(f"Error al procesar la imagen: {e}")
                 return jsonify({'error': f'Error al procesar la imagen: {e}'}), 500
@@ -297,6 +298,17 @@ def guardar_transacciones():
         connection = create_db_connection()
         if connection:
             cursor = connection.cursor(dictionary=True)
+
+            # Crear un nuevo ticket
+            insert_ticket_query = """
+                INSERT INTO ticket (fk_usuario, img_name, fecha_registro)
+                VALUES (%s, %s, %s)
+            """
+            fecha_registro = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            cursor.execute(insert_ticket_query, (user_id, filename, fecha_registro))
+            ticket_id = cursor.lastrowid
+            logger.info(f"Nuevo ticket creado con ID: {ticket_id}")
+
             # Iterar sobre las frutas y estados recibidos
             for fruta, estados in fruit_states.items():
                 logger.info(f"Procesando fruta: {fruta} con estados: {estados}")
@@ -311,17 +323,16 @@ def guardar_transacciones():
 
                             # Insertar transacción en la base de datos
                             insert_query = """
-                                INSERT INTO transaccion (fk_usuario, fk_fruta, fk_estado_fruta, cantidad, fecha_registro)
-                                VALUES (%s, %s, %s, %s, %s)
+                                INSERT INTO transaccion (fk_ticket, fk_fruta, fk_estado_fruta, cantidad)
+                                VALUES (%s, %s, %s, %s)
                             """
-                            fecha_registro = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                            cursor.execute(insert_query, (user_id, fruta_id, estado_fruta_id, cantidad, fecha_registro))
+                            cursor.execute(insert_query, (ticket_id, fruta_id, estado_fruta_id, cantidad))
                             connection.commit()
                             logger.info(f"Transacción insertada para fruta {fruta_id} y estado {estado_fruta_id}")
                         except Exception as e:
                             logger.error(f"Error procesando fruta {fruta} y estado {estado}: {e}")
             cursor.close()
-            return jsonify({"message": "Transacciones guardadas exitosamente"}), 200
+            return jsonify({"message": "Transacciones guardadas exitosamente", "image_url": f"/uploads/{filename}"}), 200
         else:
             return "Database connection error", 500
     except Exception as e:
@@ -417,7 +428,7 @@ def predict_and_detect(chosen_model, img, classes=None, conf=0.5):
                 if "Verde" in class_name:
                     fruit_states["limon"]["verde"] += 1
                 elif "maduro" in class_name:
-                    fruit_states["limon"]["maduro"] += 1
+                    fruit_states["limon"]["madura"] += 1
                 elif "descompuesto" in class_name:
                     fruit_states["limon"]["descompuesto"] += 1
             elif "mango" in class_name:
