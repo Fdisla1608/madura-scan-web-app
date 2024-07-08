@@ -132,10 +132,13 @@ function llenarTabla(registros) {
     let celdaDescripcion = fila.insertCell(1);
     celdaDescripcion.textContent = registro.Descripcion;
 
-    let celdaFecha = fila.insertCell(2);
+    let celdaUser = fila.insertCell(2);
+    celdaUser.textContent = registro.user;
+
+    let celdaFecha = fila.insertCell(3);
     celdaFecha.textContent = registro.fecha;
 
-    let celdaAccion = fila.insertCell(3);
+    let celdaAccion = fila.insertCell(4);
     let boton = document.createElement("button");
     boton.textContent = "Visualizar";
     boton.onclick = function () {

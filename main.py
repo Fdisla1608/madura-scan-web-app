@@ -73,9 +73,7 @@ def index():
         username = session['username']
         userId = session.get('user_id', 'Unknown ID')
         userType = session.get('user_type', 'Unknown Type')
-        if userType == 1:
-            return render_template('index.html', username=username, user_id=userId, user_type=userType)
-        return redirect(url_for('scan'))
+        return render_template('index.html', username=username, user_id=userId, user_type=userType)
         
     return redirect(url_for('login'))
 
@@ -459,9 +457,8 @@ def get_fruit_data(connection):
     JOIN fruta f ON t.fk_fruta = f.id
     JOIN estado_fruta ef ON t.fk_estado_fruta = ef.id
     JOIN ticket ti ON t.fk_ticket = ti.id
-    WHERE ti.fk_usuario = %s
     GROUP BY f.descripcion, ef.descripcion;
-    """, (userId,))
+    """)
     
     fruit_data = cursor.fetchall()
 
@@ -469,13 +466,14 @@ def get_fruit_data(connection):
     SELECT 
         img_name AS cod,
         CONCAT(fruta.descripcion, ' ', estado_fruta.descripcion, ' -> ', cantidad) as Descripcion,
-        ti.fecha_registro AS fecha
+        usuario.usuario as usuario,
+        ticket.fecha_registro AS fecha
         FROM transaccion
         INNER JOIN fruta ON transaccion.fk_fruta = fruta.id
         INNER JOIN estado_fruta ON transaccion.fk_estado_fruta = estado_fruta.id
-        INNER JOIN ticket ti ON transaccion.fk_ticket = ti.id
-        WHERE ti.fk_usuario = %s
-    """, (userId,))
+        INNER JOIN ticket ON transaccion.fk_ticket = ticket.id
+        INNER JOIN usuario ON ticket.fk_usuario = usuario.id;
+    """)
     records = cursor.fetchall()
 
     return user, fruit_data, records
@@ -503,6 +501,7 @@ def format_data(user, fruit_data, records):
         transacciones.append({
             "cod": f"{record['cod']}",
             "Descripcion": f"[{record['Descripcion']}]",
+            "user":f"[{record['usuario']}]",
             "fecha": record['fecha'].strftime('%Y-%m-%d')
         })
 
