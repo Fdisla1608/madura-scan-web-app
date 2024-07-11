@@ -208,6 +208,7 @@ def crear_usuario():
 def actualizar_usuario(id):
     data = request.json
     id = data.get("id")
+    tipoUsuario = data.get("fk_tipo_usuario")
     nombre = data.get('nombre')
     apellido = data.get('apellido')
     telefono = data.get('telefono')
@@ -222,7 +223,8 @@ def actualizar_usuario(id):
             cursor = connection.cursor()
             update_query = """
                 UPDATE usuario
-                SET nombre = %s, 
+                SET fk_tipo_usuario = %s,
+                    nombre = %s, 
                     apellido = %s, 
                     telefono = %s, 
                     correo_electronico = %s, 
@@ -231,7 +233,7 @@ def actualizar_usuario(id):
                     fecha_nacimiento = %s
                 WHERE id = %s
             """
-            cursor.execute(update_query, (nombre, apellido, telefono, correo, usuario, pwd, fecha_nacimiento, id))
+            cursor.execute(update_query, (tipoUsuario, nombre, apellido, telefono, correo, usuario, pwd, fecha_nacimiento, id))
             connection.commit()
             cursor.close()
             return jsonify({"message": "Usuario actualizado exitosamente"}), 200

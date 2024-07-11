@@ -79,7 +79,6 @@ async function saveScan() {
 }
 
 async function cancelScan() {
-  console.log(fruitStates);
   fruitStates = {};
   prepareTables(fruitStates);
 }
