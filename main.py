@@ -67,6 +67,15 @@ def obtener_id_estado_fruta(cursor, estado):
     else:
         raise Exception(f"No se encontró el estado de fruta: {estado}")
 
+@app.route('/get_session_data')
+def get_session_data():
+    if 'username' in session:
+        username = session['username']
+        userId = session.get('user_id', 'Unknown ID')
+        userType = session.get('user_type', 'Unknown Type')
+        return jsonify(username=username, user_id=userId, user_type=userType)
+    return jsonify(user_id="n/a")
+
 @app.route('/')
 def index():
     if 'username' in session:
@@ -274,8 +283,8 @@ def guardar_transacciones():
         fruit_states = data.get('fruitStates', {})
         image_data = data.get('image', '')
 
-        user_id = 1  # ID del usuario que realiza la transacción (ajustar según tu aplicación)
-        logger.info(f"Datos recibidos para guardar transacciones: {fruit_states}")
+        user_id = data.get('id', 0)
+        logger.info(f"Datos recibidos para guardar transacciones: usuario {user_id}  - {fruit_states}")
 
         # Decodificar la imagen base64 si existe
         filename = None
@@ -466,15 +475,16 @@ def get_fruit_data(connection):
 
     cursor.execute("""
     SELECT 
-        img_name AS cod,
-        CONCAT(fruta.descripcion, ' ', estado_fruta.descripcion, ' -> ', cantidad) as Descripcion,
-        usuario.usuario as usuario,
-        ticket.fecha_registro AS fecha
-        FROM transaccion
-        INNER JOIN fruta ON transaccion.fk_fruta = fruta.id
-        INNER JOIN estado_fruta ON transaccion.fk_estado_fruta = estado_fruta.id
-        INNER JOIN ticket ON transaccion.fk_ticket = ticket.id
-        INNER JOIN usuario ON ticket.fk_usuario = usuario.id;
+    img_name AS cod,
+    CONCAT(fruta.descripcion, ' ', estado_fruta.descripcion, ' -> ', cantidad) as Descripcion,
+    usuario.usuario as usuario,
+    ticket.fecha_registro AS fecha
+    FROM transaccion
+    INNER JOIN fruta ON transaccion.fk_fruta = fruta.id
+    INNER JOIN estado_fruta ON transaccion.fk_estado_fruta = estado_fruta.id
+    INNER JOIN ticket ON transaccion.fk_ticket = ticket.id
+    INNER JOIN usuario ON ticket.fk_usuario = usuario.id
+    order by fecha desc;
     """)
     records = cursor.fetchall()
 

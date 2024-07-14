@@ -4,7 +4,7 @@ const video = document.getElementById("video");
 const canvas = document.createElement("canvas");
 const context = canvas.getContext("2d");
 const processed = document.getElementById("processed");
-let base64String = '';
+let base64String = "";
 let fruitStates;
 let port;
 let writer;
@@ -47,10 +47,16 @@ async function saveScan() {
         return;
       }
 
+      const userResponse = await fetch("/get_session_data");
+      const userData = await userResponse.json();
+
       const payload = {
+        id: userData.user_id,
         fruitStates,
         image: base64String,
       };
+
+      console.log(payload);
 
       const url = "/guardar_transacciones";
       const requestOptions = {
