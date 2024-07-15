@@ -125,53 +125,61 @@ section {
 }
 
 table {
-  border-spacing: 1;
+  border-spacing: 0;
   border-collapse: collapse;
   background: white;
   border-radius: 6px;
   overflow: hidden;
+  overflow-y: auto;
+  height: 400px;
   margin: 0 auto;
-  inline-size: 100%;
+  width: 100%; /* Reemplazado inline-size por width */
   position: relative;
-
-  * {
-    position: relative;
-  }
-
-  td,
-  th {
-    padding-left: 8px;
-  }
-
-  thead tr {
-    height: 60px;
-    background: #87cefa;
-    font-size: 16px;
-  }
-
-  tbody tr {
-    height: 48px;
-    border-bottom: 1px solid #e3f1d5;
-    &:last-child {
-      border: 0;
-    }
-  }
-
-  td,
-  th {
-    text-align: left;
-    &.l {
-      text-align: right;
-    }
-    &.c {
-      text-align: center;
-    }
-    &.r {
-      text-align: center;
-    }
-  }
 }
 
+table * {
+  position: relative;
+}
+
+td,
+th {
+  padding: 8px; /* Simplificado a padding para aplicar a todos los lados */
+}
+
+thead tr {
+  height: 60px;
+  background: #87cefa;
+  font-size: 16px;
+}
+
+tbody tr {
+  height: 48px;
+  border-bottom: 1px solid #e3f1d5;
+}
+
+tbody tr:last-child {
+  border: 0; /* No se puede usar &:last-child en CSS puro */
+}
+
+td,
+th {
+  text-align: left;
+}
+
+th.l,
+td.l {
+  text-align: right;
+}
+
+th.c,
+td.c {
+  text-align: center;
+}
+
+th.r,
+td.r {
+  text-align: right; /* Corregido para alinear a la derecha */
+}
 .visualize-screen {
   position: absolute;
   display: none;
@@ -193,7 +201,6 @@ table {
   border: 3px black solid;
   background-color: white;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-
 }
 
 @media #{$gl-xs} {

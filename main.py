@@ -484,7 +484,7 @@ def get_fruit_data(connection):
     INNER JOIN estado_fruta ON transaccion.fk_estado_fruta = estado_fruta.id
     INNER JOIN ticket ON transaccion.fk_ticket = ticket.id
     INNER JOIN usuario ON ticket.fk_usuario = usuario.id
-    order by fecha desc;
+    order by fecha asc;
     """)
     records = cursor.fetchall()
 
@@ -514,7 +514,7 @@ def format_data(user, fruit_data, records):
             "cod": f"{record['cod']}",
             "Descripcion": f"[{record['Descripcion']}]",
             "user":f"[{record['usuario']}]",
-            "fecha": record['fecha'].strftime('%Y-%m-%d')
+            "fecha": record['fecha'].strftime('%Y-%m-%d %H:%M:%S')
         })
 
     result = {

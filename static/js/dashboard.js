@@ -82,27 +82,20 @@ document.addEventListener("DOMContentLoaded", () => {
 function crearTarjetasFrutas(data) {
   const fruitsPanel = document.getElementById("fruits-panel");
 
-  // Limpiar contenido previo si es necesario
   fruitsPanel.innerHTML = "";
-
-  // Iterar sobre las frutas en el JSON
   Object.keys(data.frutas).forEach((fruta) => {
     const frutaData = data.frutas[fruta];
-
-    // Crear elementos HTML para la tarjeta de fruta
     const cardDiv = document.createElement("div");
     cardDiv.classList.add("fruits-cards");
 
     const stateDiv = document.createElement("div");
     stateDiv.classList.add("fruits-cards-state");
-
-    // Iterar sobre los estados de la fruta (Verde, Maduro, Descompuesto)
     Object.keys(frutaData).forEach((estado) => {
       const estadoValue = frutaData[estado];
 
       const stateCardDiv = document.createElement("div");
       stateCardDiv.classList.add("fruits-card-state");
-      stateCardDiv.classList.add(estado.toLowerCase()); // Añadir clase de estado (green, mature, roaten)
+      stateCardDiv.classList.add(estado.toLowerCase());
 
       const stateLabel = document.createElement("div");
       stateLabel.textContent = `${estado}: ${estadoValue}`;
@@ -122,8 +115,9 @@ function crearTarjetasFrutas(data) {
 
 function llenarTabla(registros) {
   const tablaCuerpo = document.getElementById("frutasTabla").getElementsByTagName("tbody")[0];
+  for (let i = registros.length - 1; i >= 0; i--) {
+    const registro = registros[i];
 
-  registros.forEach((registro) => {
     let fila = tablaCuerpo.insertRow();
 
     let celdaCod = fila.insertCell(0);
@@ -145,14 +139,16 @@ function llenarTabla(registros) {
       visualizar(registro.cod);
     };
     celdaAccion.appendChild(boton);
-  });
+  }
 }
 
 function agruparDatosPorFecha(registros) {
   const agrupados = {};
 
   registros.forEach((registro) => {
-    const fecha = registro.fecha;
+    const [fechaParte] = registro.fecha.split(" ");
+    const [year, month, day] = fechaParte.split("-");
+    const fecha = `${day}-${month}-${year}`;
     const descripcion = registro.Descripcion;
 
     if (!agrupados[fecha]) {
